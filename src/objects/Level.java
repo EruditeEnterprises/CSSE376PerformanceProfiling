@@ -67,6 +67,7 @@ public class Level {
 																	// boxes.
 	private ArrayList<Gold> goldObjects; // The arraylist of Gold objects.
 	private HashMap<Integer, BufferedImage> images; // Hashmap of tile images.
+	private boolean[][] needsUpdated;
 
 	/**
 	 * Constructs a Level object with given tileSize that searches for a
@@ -88,6 +89,14 @@ public class Level {
 		populateImages();
 		populateMap(fileName, tileSize);
 
+		this.needsUpdated = new boolean[this.mapHeight][this.mapWidth];
+		for(int i =0; i<this.mapHeight;i++)
+		{
+			for(int j=0; j<this.mapWidth;j++)
+			{
+				this.needsUpdated[i][j] = true;
+			}
+		}
 	}
 
 	/**
@@ -333,8 +342,11 @@ public class Level {
 		Graphics2D g = img.createGraphics();
 		for (int r = 0; r < this.map.length; r++) {
 			for (int c = 0; c < this.map[r].length; c++) {
-				currentPosition = this.map[r][c];
-				drawTileImage(currentPosition, r, c, g);
+				if(this.needsUpdated[r][c]){
+					currentPosition = this.map[r][c];
+					drawTileImage(currentPosition, r, c, g);
+					this.needsUpdated[r][c]=false;
+				}
 			}
 		}
 		g.dispose();
@@ -357,10 +369,10 @@ public class Level {
 	 *            the Graphics2D object to draw on.
 	 */
 	public void drawTileImage(int tileValue, int row, int col, Graphics2D g2) {
-		// FIXME: reduce the number of calls to the code below. When does drawImage really need to be called?
 		BufferedImage image = this.images.get(tileValue);
 		g2.drawImage(image, row * this.tileSize, col * this.tileSize, null);
 	}
+		
 
 	/**
 	 * Gets the Level's array.
@@ -384,6 +396,7 @@ public class Level {
 	 */
 	public void updateTile(int x, int y, int tileID) {
 		this.map[x][y] = tileID;
+		this.needsUpdated[x][y] = true;
 	}
 
 	/**
