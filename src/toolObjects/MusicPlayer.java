@@ -15,7 +15,7 @@ import javax.sound.sampled.Clip;
 public class MusicPlayer {
 	
 	private Clip clip;
-	
+	static HashMap<String, Clip> clips= new HashMap<>();
 	/**
 	 * Constructs a Music Player.
 	 *
@@ -24,6 +24,11 @@ public class MusicPlayer {
 	public MusicPlayer(String fileName) {
 		// FIXME: reduce the number of calls to the code below
 		// Obtain a clip.
+		if(clips.containsKey(fileName))
+		{
+			this.clip = clips.get(fileName);
+			return;
+		}
 		try {
 			AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(getClass().getResource(fileName));
 			AudioFormat baseFormat = audioInputStream.getFormat();
@@ -39,6 +44,8 @@ public class MusicPlayer {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		clips.put(fileName, clip);
+		
 	}
 	
 	/**
